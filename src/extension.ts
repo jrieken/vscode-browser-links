@@ -1,7 +1,5 @@
 import * as vscode from 'vscode';
 import * as cp from 'child_process';
-import { URL } from 'url';
-import { basename } from 'path';
 
 export function activate(context: vscode.ExtensionContext) {
 
