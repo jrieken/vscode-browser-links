@@ -12,14 +12,30 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.languages.registerCompletionItemProvider('scminput', new class implements vscode.CompletionItemProvider {
 
 		async provideCompletionItems(_document: vscode.TextDocument, _position: vscode.Position): Promise<undefined | vscode.CompletionItem[]> {
+
+			let filter: RegExp | undefined;
+			const pattern = vscode.workspace.getConfiguration('safari-links').get<string>('pattern');
+			if (pattern) {
+				try {
+					filter = new RegExp(pattern);
+				} catch{ }
+			}
+
+			const result: vscode.CompletionItem[] = [];
 			const tabs = await this._getSafariTabs();
-			return tabs.map(tab => {
+
+			for (let tab of tabs) {
+				if (filter && !filter.test(tab.url)) {
+					continue;
+				}
 				const item = new vscode.CompletionItem(tab.url);
-				item.kind = vscode.CompletionItemKind.Text;
+				item.kind = vscode.CompletionItemKind.Issue;
 				item.detail = tab.title;
 				item.preselect = tab.current;
-				return item;
-			});
+				result.push(item);
+			}
+
+			return result;
 		}
 
 		private _getSafariTabs(): Promise<TabInfo[]> {

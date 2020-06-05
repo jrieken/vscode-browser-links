@@ -1,7 +1,7 @@
 {
-	"name": "safari-links",
-	"displayName": "safari-links",
-	"description": "Safari Tabs as completions in VS Code's SCM input box",
+	"name": "browser-links",
+	"displayName": "browser-links",
+	"description": "Browser Tabs as completions in VS Code's SCM input box",
 	"publisher": "jrieken",
 	"license": "MIT",
 	"version": "0.0.1",
@@ -9,6 +9,7 @@
 		"vscode": "^1.45.0"
 	},
 	"categories": [
+		"SCM Providers",
 		"Other"
 	],
 	"activationEvents": [
@@ -16,6 +17,19 @@
 		"onCommand:extension.helloWorld"
 	],
 	"main": "./out/extension.js",
+	"contributes": {
+		"configuration": [
+			{
+				"title": "browser-links",
+				"properties": {
+					"browser-links.pattern": {
+						"type": "string",
+						"markdownDescription": "Regular expression that is matched against URLs, e.g `https://github.com/.+/issues/.+`"
+					}
+				}
+			}
+		]
+	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
 		"compile": "tsc -p ./",
