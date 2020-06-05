@@ -70,7 +70,7 @@ export function activate(context: vscode.ExtensionContext) {
 						result.push({
 							title: lines[i],
 							url: lines[i + 1],
-							current: Boolean(lines[i + 2])
+							current: lines[i + 2] === 'true'
 						});
 					}
 					resolve(result);

@@ -4,7 +4,7 @@
 	"description": "Browser Tabs as completions in VS Code's SCM input box",
 	"publisher": "jrieken",
 	"license": "MIT",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"engines": {
 		"vscode": "^1.45.0"
 	},
