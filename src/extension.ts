@@ -14,15 +14,17 @@ export function activate(context: vscode.ExtensionContext) {
 		async provideCompletionItems(_document: vscode.TextDocument, _position: vscode.Position): Promise<undefined | vscode.CompletionItem[]> {
 
 			let filter: RegExp | undefined;
-			const pattern = vscode.workspace.getConfiguration('safari-links').get<string>('pattern');
+			const config = vscode.workspace.getConfiguration('browser-links');
+			const pattern = config.get<string>('pattern');
 			if (pattern) {
 				try {
 					filter = new RegExp(pattern);
 				} catch{ }
 			}
 
+			const browser = config.get<string>('browser');
+			const tabs = await this._getBrowserTabs(browser);
 			const result: vscode.CompletionItem[] = [];
-			const tabs = await this._getSafariTabs();
 
 			for (let tab of tabs) {
 				if (filter && !filter.test(tab.url)) {
@@ -38,10 +40,19 @@ export function activate(context: vscode.ExtensionContext) {
 			return result;
 		}
 
-		private _getSafariTabs(): Promise<TabInfo[]> {
+		private _scripts: Record<string, string> = {
+			'Safari': context.asAbsolutePath('./get_safari_links.scpt'),
+			'Microsoft Edge': context.asAbsolutePath('./get_edge_links.scpt'),
+			'Google Chrome': context.asAbsolutePath('./get_chrome_links.scpt'),
+		};
+
+		private _getBrowserTabs(browser?: string): Promise<TabInfo[]> {
+
+			const script = this._scripts[browser || "Safari"];
+
 			return new Promise<TabInfo[]>((resolve, reject) => {
 
-				const osa = cp.spawn('/usr/bin/osascript', [context.asAbsolutePath('./get_safari_links.scpt')]);
+				const osa = cp.spawn('/usr/bin/osascript', [script]);
 				let raw = '';
 				osa.stderr.on('data', data => raw += String(data));
 				osa.on('error', reject);

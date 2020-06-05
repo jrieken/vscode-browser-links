@@ -25,6 +25,15 @@
 					"browser-links.pattern": {
 						"type": "string",
 						"markdownDescription": "Regular expression that is matched against URLs, e.g `https://github.com/.+/issues/.+`"
+					},
+					"browser-links.browser": {
+						"type": "string",
+						"enum": [
+							"Safari",
+							"Microsoft Edge",
+							"Google Chrome"
+						],
+						"default": "Safari"
 					}
 				}
 			}
