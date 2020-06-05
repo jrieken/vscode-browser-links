@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import * as cp from 'child_process';
+import { title } from 'process';
 
 export function activate(context: vscode.ExtensionContext) {
 
@@ -30,9 +31,10 @@ export function activate(context: vscode.ExtensionContext) {
 				if (filter && !filter.test(tab.url)) {
 					continue;
 				}
-				const item = new vscode.CompletionItem(tab.url);
+				const item = new vscode.CompletionItem(tab.title);
 				item.kind = vscode.CompletionItemKind.Issue;
-				item.detail = tab.title;
+				item.insertText = tab.url;
+				item.detail = tab.url;
 				item.preselect = tab.current;
 				result.push(item);
 			}
