@@ -40,6 +40,7 @@ export function activate(context: vscode.ExtensionContext) {
 				item.kind = vscode.CompletionItemKind.Issue;
 				item.insertText = tab.url;
 				item.detail = tab.url;
+				item.documentation = tab.title;
 				item.preselect = tab.current;
 				result.push(item);
 			}
