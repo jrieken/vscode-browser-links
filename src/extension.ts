@@ -4,6 +4,11 @@ import { title } from 'process';
 
 export function activate(context: vscode.ExtensionContext) {
 
+	if (process.platform !== 'darwin') {
+		console.warn(`${context.extensionUri} is MAC only.`);
+		return;
+	}
+
 	interface TabInfo {
 		title: string;
 		url: string;
