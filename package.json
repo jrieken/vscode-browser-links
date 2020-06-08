@@ -3,6 +3,9 @@
 	"displayName": "browser-links",
 	"description": "Browser Tabs as completions in VS Code's SCM input box",
 	"publisher": "jrieken",
+	"repository": {
+		"url": "https://github.com/jrieken/vscode-browser-links"
+	},
 	"license": "MIT",
 	"version": "0.0.5",
 	"engines": {
