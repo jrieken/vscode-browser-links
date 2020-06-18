@@ -1,6 +1,6 @@
 # Browser Links
 
-Browser tabs, e.g safari, as completions in VS Code's SCM input box. When making a commit you usually reference an issue by its url. This extension reads the list of browser tabs and suggests them as completions.
+Get browser tabs as completions in VS Code's SCM input box. Use case: when making a commit you usually reference an issue by its url. This extension reads the list of browser tabs from Edge, Safari, or Chrome and suggests them as completions.
 
 ![Sample](https://raw.githubusercontent.com/jrieken/vscode-browser-links/master/sample.png)
 
