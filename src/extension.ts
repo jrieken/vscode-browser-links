@@ -1,6 +1,5 @@
 import * as vscode from 'vscode';
 import * as cp from 'child_process';
-import { title } from 'process';
 
 export function activate(context: vscode.ExtensionContext) {
 
