@@ -24,7 +24,7 @@ export function activate(context: vscode.ExtensionContext) {
 			if (pattern) {
 				try {
 					filter = new RegExp(pattern);
-				} catch{ }
+				} catch { }
 			}
 
 			const browser = config.get<string>('browser');
@@ -35,7 +35,7 @@ export function activate(context: vscode.ExtensionContext) {
 				if (filter && !filter.test(tab.url)) {
 					continue;
 				}
-				const item = new vscode.CompletionItem(tab.title);
+				const item = new vscode.CompletionItem({ label: tab.title, description: tab.url });
 				item.kind = vscode.CompletionItemKind.Issue;
 				item.insertText = tab.url;
 				item.detail = tab.url;
