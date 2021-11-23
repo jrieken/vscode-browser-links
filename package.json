@@ -43,6 +43,7 @@
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
+		"publish": "vsce publish --target darwin-x64 darwin-arm64",
 		"compile": "tsc -p ./",
 		"lint": "eslint src --ext ts",
 		"watch": "tsc -watch -p ./",
