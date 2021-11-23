@@ -16,7 +16,7 @@
 		"Other"
 	],
 	"activationEvents": [
-		"*"
+		"onLanguage:scminput"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
