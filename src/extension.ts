@@ -8,56 +8,28 @@ export function activate(context: vscode.ExtensionContext) {
 		return;
 	}
 
-	interface TabInfo {
-		title: string;
-		url: string;
-		current: boolean;
-	}
+	type BrowserName = 'Safari' | 'Microsoft Edge' | 'Google Chrome';
 
-	context.subscriptions.push(vscode.languages.registerCompletionItemProvider('scminput', new class implements vscode.CompletionItemProvider {
+	class TabInfo {
 
-		async provideCompletionItems(_document: vscode.TextDocument, _position: vscode.Position): Promise<undefined | vscode.CompletionItem[]> {
-
-			let filter: RegExp | undefined;
-			const config = vscode.workspace.getConfiguration('browser-links');
-			const pattern = config.get<string>('pattern');
-			if (pattern) {
-				try {
-					filter = new RegExp(pattern);
-				} catch { }
-			}
-
-			const browser = config.get<string>('browser');
-			const tabs = await this._getBrowserTabs(browser);
-			const result: vscode.CompletionItem[] = [];
-
-			for (let tab of tabs) {
-				if (filter && !filter.test(tab.url)) {
-					continue;
-				}
-				const item = new vscode.CompletionItem({ label: tab.title, description: tab.url });
-				item.kind = vscode.CompletionItemKind.Issue;
-				item.insertText = tab.url;
-				item.detail = tab.url;
-				item.documentation = tab.title;
-				item.preselect = tab.current;
-				result.push(item);
-			}
-
-			return result;
-		}
-
-		private _scripts: Record<string, string> = {
+		private static _scripts: Record<BrowserName, string> = {
 			'Safari': context.asAbsolutePath('./get_safari_links.scpt'),
 			'Microsoft Edge': context.asAbsolutePath('./get_edge_links.scpt'),
 			'Google Chrome': context.asAbsolutePath('./get_chrome_links.scpt'),
 		};
 
-		private _getBrowserTabs(browser?: string): Promise<TabInfo[]> {
+		static async read() {
 
-			const script = this._scripts[browser || "Safari"];
+			const config = vscode.workspace.getConfiguration('browser-links');
+			const browser = config.get<BrowserName>('browser', 'Safari');
+			const script = this._scripts[browser];
 
-			return new Promise<TabInfo[]>((resolve, reject) => {
+			if (!script) {
+				console.log(`INVALID browser name: ${browser}`);
+				return [];
+			}
+
+			const all = await new Promise<TabInfo[]>((resolve, reject) => {
 
 				const osa = cp.spawn('/usr/bin/osascript', [script]);
 				let raw = '';
@@ -72,15 +44,56 @@ export function activate(context: vscode.ExtensionContext) {
 					const result: TabInfo[] = [];
 					const lines = raw.trim().split('\n');
 					for (let i = 0; i < lines.length; i += 3) {
-						result.push({
-							title: lines[i],
-							url: lines[i + 1],
-							current: lines[i + 2] === 'true'
-						});
+						result.push(new TabInfo(
+							lines[i],
+							lines[i + 1],
+							lines[i + 2] === 'true'
+						));
 					}
 					resolve(result);
 				});
 			});
+
+			let filter: RegExp | undefined;
+			const pattern = config.get<string>('pattern');
+			if (pattern) {
+				try {
+					filter = new RegExp(pattern);
+				} catch { }
+			}
+
+			if (!filter) {
+				return all;
+			}
+
+			return all.filter(tab => filter!.test(tab.url));
+		}
+
+		constructor(
+			readonly title: string,
+			readonly url: string,
+			readonly current: boolean,
+		) { }
+	}
+
+	context.subscriptions.push(vscode.languages.registerCompletionItemProvider('scminput', new class implements vscode.CompletionItemProvider {
+
+		async provideCompletionItems(_document: vscode.TextDocument, _position: vscode.Position): Promise<undefined | vscode.CompletionItem[]> {
+
+			const tabs = await TabInfo.read();
+			const result: vscode.CompletionItem[] = [];
+
+			for (let tab of tabs) {
+				const item = new vscode.CompletionItem({ label: tab.title, description: tab.url });
+				item.kind = vscode.CompletionItemKind.Issue;
+				item.insertText = tab.url;
+				item.detail = tab.url;
+				item.documentation = tab.title;
+				item.preselect = tab.current;
+				result.push(item);
+			}
+
+			return result;
 		}
 	}));
 }
