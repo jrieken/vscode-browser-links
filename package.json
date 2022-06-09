@@ -16,10 +16,19 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onLanguage:scminput"
+		"onLanguage:scminput",
+		"onCommand:browser-links.startWorking"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
+		"commands": [
+			{
+				"command": "browser-links.startWorking",
+				"title": "Start Working On Issue from Browser Tab...",
+				"category": "GitHub Issues",
+				"enablement": "github:initialized"
+			}
+		],
 		"configuration": [
 			{
 				"title": "browser-links",

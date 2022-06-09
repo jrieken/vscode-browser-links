@@ -18,7 +18,7 @@ export function activate(context: vscode.ExtensionContext) {
 			'Google Chrome': context.asAbsolutePath('./get_chrome_links.scpt'),
 		};
 
-		static async read() {
+		static async retrieve() {
 
 			const config = vscode.workspace.getConfiguration('browser-links');
 			const browser = config.get<BrowserName>('browser', 'Safari');
@@ -76,11 +76,13 @@ export function activate(context: vscode.ExtensionContext) {
 		) { }
 	}
 
+	// --- completions for the SCM input box
+
 	context.subscriptions.push(vscode.languages.registerCompletionItemProvider('scminput', new class implements vscode.CompletionItemProvider {
 
 		async provideCompletionItems(_document: vscode.TextDocument, _position: vscode.Position): Promise<undefined | vscode.CompletionItem[]> {
 
-			const tabs = await TabInfo.read();
+			const tabs = await TabInfo.retrieve();
 			const result: vscode.CompletionItem[] = [];
 
 			for (let tab of tabs) {
@@ -95,5 +97,36 @@ export function activate(context: vscode.ExtensionContext) {
 
 			return result;
 		}
+	}));
+
+	// --- command to start working browser tab
+
+	context.subscriptions.push(vscode.commands.registerCommand('browser-links.startWorking', async () => {
+
+		type Pick = vscode.QuickPickItem & { tab: TabInfo; };
+
+		const picks = TabInfo.retrieve().then(tabs => {
+			const picks: Pick[] = [];
+			for (const tab of tabs) {
+				const pick: Pick = {
+					label: tab.title,
+					detail: tab.url,
+					tab
+				};
+				if (tab.current) {
+					picks.unshift(pick);
+				} else {
+					picks.push(pick);
+				}
+			}
+			return picks;
+		});
+
+		const pick = await vscode.window.showQuickPick(picks, { placeHolder: 'Select an item to start working on' });
+		if (!pick) {
+			return;
+		}
+
+		await vscode.commands.executeCommand('issue.startWorking', vscode.Uri.parse(pick.tab.url));
 	}));
 }
