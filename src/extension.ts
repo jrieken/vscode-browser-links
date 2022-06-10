@@ -126,7 +126,11 @@ export function activate(context: vscode.ExtensionContext) {
 		if (!pick) {
 			return;
 		}
-
-		await vscode.commands.executeCommand('issue.startWorking', vscode.Uri.parse(pick.tab.url));
+		try {
+			await vscode.commands.executeCommand('issue.startWorking', vscode.Uri.parse(pick.tab.url));
+		} catch (err) {
+			console.error('FAILED to start working on issue');
+			console.error(err);
+		}
 	}));
 }
