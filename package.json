@@ -61,9 +61,9 @@
 	"devDependencies": {
 		"@types/glob": "^7.1.1",
 		"@types/node": "^12.11.7",
-		"eslint": "^6.8.0",
-		"@typescript-eslint/parser": "^2.18.0",
-		"@typescript-eslint/eslint-plugin": "^2.18.0",
+		"eslint": "^9.39.1",
+		"@typescript-eslint/parser": "^8.48.0",
+		"@typescript-eslint/eslint-plugin": "^8.48.0",
 		"glob": "^7.1.6",
 		"typescript": "^3.7.5"
 	}
